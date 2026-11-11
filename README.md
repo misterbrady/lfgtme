@@ -7,7 +7,7 @@ Click the wrong person and you get a joke built from what 179 real GTM engineer 
 for. Find the right one and the page says what the rest of the site is about: we find them for
 you.
 
-Open `site/index.html` in a browser to play it. It works on phones too (the hall scrolls
+Play it at https://misterbrady.github.io/lfgtme/ or open `site/index.html` in a browser. It works on phones too (the hall scrolls
 sideways).
 
 ## What's here
