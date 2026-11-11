@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>lfgtme</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: one cream page, a seek-and-find hero, then four bands: characters (dark), shortlist, fee, who spots. Single light theme by choice. */
+:root {
+  --paper: #fffaf0; --tint: #f3ead8; --ink: #1d1b16; --soft: #57524a;
+  --orange: #c2410c; --orange-deep: #9a3412; --teal: #0b7285;
+  --night: #1d1b16; --night-card: #2a2722; --night-soft: #d6d0c4; --night-dim: #a8a196; --peach: #fdba74;
+  --display: 'Bricolage Grotesque', 'Avenir Next', 'Segoe UI', sans-serif;
+  --body: Inter, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box }
+body { margin: 0 }
+img { max-width: 100% }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6 }
+a { color: var(--orange) }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px }
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; text-wrap: balance; margin: 0 }
+
+header .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; padding-block: 20px }
+.logo { font-family: var(--display); font-weight: 700; font-size: 26px; color: var(--ink); text-decoration: none }
+nav { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; font-size: 15px }
+nav a { color: var(--ink); text-decoration: none }
+.pill { background: var(--ink); color: var(--paper) !important; padding: 10px 16px; border-radius: 999px; font-weight: 500 }
+@media (max-width: 640px) { nav a:not(.pill) { display: none } }
+
+.hero { padding-block: 32px 72px }
+.hero-head { display: flex; flex-wrap: wrap; gap: 20px 48px; align-items: flex-end; justify-content: space-between }
+.hero h1 { flex: 1 1 520px; font-size: clamp(40px, 7vw, 72px); line-height: 1; letter-spacing: -0.02em }
+.hero-head p { flex: 1 1 300px; margin: 0; font-size: 19px; color: var(--soft) }
+.scene-scroll { margin-top: 32px; border-radius: 20px; overflow-x: auto; background: var(--tint); -webkit-overflow-scrolling: touch }
+.scene { position: relative; line-height: 0; min-width: 100% }
+@media (max-width: 760px) { .scene { width: 880px } }
+.scene img { width: 100%; height: auto; display: block; max-width: none }
+.spot { position: absolute; appearance: none; padding: 0; margin: 0; border: 0; background: none; cursor: pointer; border-radius: 10px }
+.floor { position: absolute; inset: 0; appearance: none; border: 0; padding: 0; background: none; cursor: crosshair }
+.spot.picked { border: 3px solid var(--paper); box-shadow: 0 0 0 3px var(--teal) }
+.spot.found { border: 4px solid #ea580c; box-shadow: 0 0 0 9999px rgba(29, 27, 22, 0.5); z-index: 2 }
+.swipe { display: none; margin: 8px 0 0; font-size: 13px; color: var(--soft) }
+@media (max-width: 760px) { .swipe { display: block } }
+.status { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 14px 16px; align-items: center; justify-content: space-between }
+.status p { margin: 0; font-weight: 600; font-size: 18px; min-width: 0; flex: 1 1 280px }
+.ghost { font: inherit; font-size: 15px; background: none; border: 1px solid var(--ink); border-radius: 999px; padding: 10px 18px; cursor: pointer; color: var(--ink) }
+.source { margin: 10px 0 0; font-size: 13px; color: var(--soft) }
+
+.chars { background: var(--night); color: var(--paper) }
+.chars .wrap { padding-block: 88px }
+.chars h2 { font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; max-width: 900px }
+.chars .lede { margin: 18px 0 0; color: var(--night-soft); max-width: 680px }
+.grid4 { margin-top: 48px; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px }
+.char { background: var(--night-card); border-radius: 16px; padding: 26px; display: flex; flex-direction: column; gap: 10px }
+.kind { font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--peach) }
+.char h3 { font-size: 30px }
+.char .q { margin: 0; font-weight: 600 }
+.char .d { margin: 0; color: var(--night-soft); font-size: 15px; flex: 1 }
+.char .n { margin: 6px 0 0; font-size: 14px; color: var(--night-dim); font-variant-numeric: tabular-nums }
+
+.short .wrap { padding-block: 88px }
+.short h2 { font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05 }
+.short .lede { margin: 14px 0 0; color: var(--soft); max-width: 680px }
+.cards { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px }
+.card { border: 2px solid var(--ink); border-radius: 16px; padding: 24px; background: #ffffff; display: flex; flex-direction: column; gap: 16px; min-width: 0 }
+.tags { display: flex; flex-wrap: wrap; gap: 8px }
+.tags span { border: 1px solid var(--ink); font-size: 13px; padding: 3px 10px; border-radius: 999px }
+.tags .main { background: var(--orange); border-color: var(--orange); color: #ffffff; font-weight: 600 }
+.card .t { font-family: var(--display); font-weight: 700; font-size: 23px; line-height: 1.2 }
+.card .w { font-size: 14px; color: var(--soft); margin-top: 4px }
+.stats { display: flex; flex-direction: column; gap: 8px; padding-block: 14px; border-top: 2px solid var(--tint); border-bottom: 2px solid var(--tint) }
+.stat { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--soft) }
+.pips { display: flex; gap: 4px }
+.pips i { width: 16px; height: 8px; border-radius: 999px; background: var(--tint) }
+.pips i.on { background: var(--orange) }
+.card p { margin: 0; font-size: 15px }
+
+.fee { padding-block: 0 88px }
+.fee-box { background: var(--tint); border-radius: 20px; padding: clamp(24px, 5vw, 48px); display: flex; flex-wrap: wrap; gap: 16px 56px; align-items: center }
+.fee-big { font-family: var(--display); font-weight: 700; font-size: clamp(64px, 10vw, 96px); line-height: 1 }
+.fee-box > div:last-child { flex: 1 1 320px; min-width: 0 }
+.fee-line { font-size: 22px; font-weight: 600 }
+.fee-sub { color: var(--soft); margin-top: 6px }
+
+.book { padding-block: 0 96px; display: flex; flex-wrap: wrap; gap: 28px; align-items: center; justify-content: space-between }
+.who { display: flex; gap: 20px; align-items: center; flex: 1 1 420px; min-width: 0 }
+.who img { width: 96px; height: 96px; border-radius: 999px; object-fit: cover; flex: 0 0 96px }
+.who-t { font-family: var(--display); font-weight: 700; font-size: 25px; line-height: 1.2 }
+.who-d { color: var(--soft); max-width: 560px }
+.cta { background: var(--orange); color: #ffffff; text-decoration: none; padding: 18px 28px; border-radius: 999px; font-weight: 600 }
+.cta:hover { background: var(--orange-deep) }
+@media (prefers-reduced-motion: no-preference) { .spot.found { transition: box-shadow 0.4s } }
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <a class="logo" href="#top">lfgtme</a>
+  <nav>
+    <a href="#characters">The four characters</a>
+    <a href="#shortlist">Sample shortlist</a>
+    <a href="#fee">Fee</a>
+    <a class="pill" href="#book">Book an intake call</a>
+  </nav>
+</div></header>
+
+<main>
+<section id="top" class="hero"><div class="wrap">
+  <div class="hero-head">
+    <h1>Let's find the GTM engineer your team is missing.</h1>
+    <p>There's one in this crowd. Can you spot them? We've already ranked 1,945.</p>
+  </div>
+  <div class="scene-scroll">
+    <div class="scene" id="scene">
+      <img src="crowd.jpg" alt="A packed SaaS conference expo hall. One person in the crowd is the GTM engineer." width="1536" height="1024">
+      <button type="button" class="floor" id="floor" aria-label="Empty floor"></button>
+    </div>
+  </div>
+  <p class="swipe">Swipe sideways to look around the hall.</p>
+  <div class="status">
+    <p id="msg" aria-live="polite">Tap the one you think is the GTM engineer.</p>
+    <button type="button" class="ghost" id="reveal">Show me</button>
+  </div>
+  <p class="source">Numbers from 179 GTM engineer job posts we read in October and November 2026.</p>
+</div></section>
+
+<section id="characters" class="chars"><div class="wrap">
+  <h2>The right GTM engineer is hard to spot, because it's one title played by four different characters.</h2>
+  <p class="lede">Two are about what someone owns today. Two are about where they came from. Most strong hires have main character and secondary character energy.</p>
+  <div class="grid4" id="chars"></div>
+</div></section>
+
+<section id="shortlist" class="short"><div class="wrap">
+  <h2>What a shortlist looks like</h2>
+  <p class="lede">Three cards from a real search for a Senior GTM Architect, anonymized. Every card says why we picked them.</p>
+  <div class="cards" id="cards"></div>
+</div></section>
+
+<section id="fee" class="fee"><div class="wrap">
+  <div class="fee-box">
+    <div class="fee-big">15%</div>
+    <div><div class="fee-line">of first-year base. No retainer.</div><div class="fee-sub">90-day guarantee: if they leave, we search again at no fee. Profiles to review in 24 hours, first meetings in 14 days.</div></div>
+  </div>
+</div></section>
+
+<section id="book"><div class="wrap book">
+  <div class="who">
+    <img src="steven.jpg" alt="Steven Brady">
+    <div><div class="who-t">Steven Brady does the spotting.</div><div class="who-d">15+ years in GTM across B2B SaaS and FinTech. Seller by backstory, multiclass Outbound and Systems. Builds agentic operating systems for recruiters.</div></div>
+  </div>
+  <a class="cta" href="#book">Book an intake call</a>
+</div></section>
+</main>
+
+<script>
+(() => {
+  const target = { id: 'gtme', x: 0.214, y: 0.479, w: 0.062, h: 0.28 };
+  const decoys = [
+    ['The Wrong Hat', 0.311, 0.685, 0.082, 0.187, 'Not this one. Right colors, wrong hat. Matching keywords on a profile goes wrong the same way.'],
+    ['The Shipper', 0.873, 0.333, 0.054, 0.163, "Close. Ships fast and forgets. A third of job posts also ask who's monitoring it once it's live."],
+    ['But Why?', 0.067, 0.679, 0.088, 0.156, 'Not this one. Building pipeline in VR. None of the 179 job posts we read asked for that.'],
+    ['The Sys Admin', 0.273, 0.357, 0.084, 0.205, "Close. That's a RevOps analyst. Three in four job posts ask for APIs."],
+    ['Mister Roboto', 0.687, 0.421, 0.068, 0.139, "That's an AI agent. 78% of job posts want the person who builds them."],
+    ['Tommy Tools', 0.536, 0.52, 0.07, 0.164, '"Certified partner" of 27 tools, proficient in 3. A typical job post asks for 6.'],
+    ['Sales Unc', 0.759, 0.689, 0.105, 0.291, 'A Seller, one of our four characters. Great backstory. Just make sure they can build.'],
+    ['The Whiteboard', 0.442, 0.072, 0.052, 0.119, 'Tempting. Drew the perfect architecture diagram. Beautiful funnel schematics. Nine in ten job posts ask what it did for pipeline.'],
+    ['The Agency Founder', 0.816, 0.218, 0.051, 0.162, "Not this one. Runs a GTM agency. Brilliant but not after a full-time seat. We'd ask them for an intro."],
+    ['The New Guy', 0.641, 0.762, 0.1, 0.223, 'Not this one. Went to a Clay Camp. Watched all Eric N tutorials. Only been building 6 months.'],
+    ['Vinny Vibes', 0.595, 0.301, 0.059, 0.121, 'Close. Vibe-coded a lead router at lunch. Half the job posts also want it documented, integrated, and maintained.']
+  ];
+  const floorMsgs = ['Nobody there. Keep looking.', "That's a coffee stain.", 'Just carpet. Lots of carpet.'];
+  const FOUND = 'Found them. No orange cap, no costume. The real ones rarely look the part. Now picture 1,945 of them, ranked.';
+  const scene = document.getElementById('scene'), msg = document.getElementById('msg');
+  let floorN = 0, found = false;
+  const place = (el, b) => Object.assign(el.style, { left: b.x * 100 + '%', top: b.y * 100 + '%', width: b.w * 100 + '%', height: b.h * 100 + '%' });
+  const clearPicked = () => scene.querySelectorAll('.spot.picked').forEach((s) => s.classList.remove('picked'));
+  decoys.forEach(([id, x, y, w, h, joke]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'spot'; b.setAttribute('aria-label', 'Person in the crowd');
+    place(b, { x, y, w, h });
+    b.addEventListener('click', () => { if (found) return; clearPicked(); b.classList.add('picked'); msg.textContent = joke; });
+    scene.appendChild(b);
+  });
+  const t = document.createElement('button');
+  t.type = 'button'; t.className = 'spot'; t.setAttribute('aria-label', 'Person in the crowd');
+  place(t, target);
+  const win = (text) => { found = true; clearPicked(); t.classList.add('found'); msg.textContent = text; };
+  t.addEventListener('click', () => win(FOUND));
+  scene.appendChild(t);
+  document.getElementById('floor').addEventListener('click', () => { if (found) return; clearPicked(); msg.textContent = floorMsgs[floorN++ % floorMsgs.length]; });
+  document.getElementById('reveal').addEventListener('click', () => {
+    win('There they are: teal hoodie, by the coffee line. The real ones rarely look the part. Now picture 1,945 of them, ranked.');
+    const box = t.getBoundingClientRect(), sc = scene.parentElement;
+    sc.scrollTo({ left: Math.max(0, t.offsetLeft - sc.clientWidth / 2 + box.width / 2), behavior: 'smooth' });
+  });
+
+  const chars = [
+    ['Seller', 'Backstory', '138', 'Did they carry a number before they built the machine?', 'Came from the closing side: AE, BDR, sales manager. They build pipeline tooling because they used to live in it.'],
+    ['Outbound', 'Owns', '948', 'Do they own who gets the message, and what it says?', 'Lists, signals, enrichment and sequences. Most GTM engineers start here, because the title grew up in Clay.'],
+    ['Systems', 'Owns', '402', 'Do they own what your CRM does on its own?', 'Routing, scoring, lifecycle stages and the data model underneath. RevOps people who now build.'],
+    ['Engineer', 'Backstory', '457', 'Did they ship software before they shipped pipeline?', 'Came from software, data engineering, data science or sales engineering. Writes real code.']
+  ];
+  document.getElementById('chars').innerHTML = chars.map(([n, k, c, q, d]) =>
+    `<div class="char"><div class="kind">${k}</div><h3>${n}</h3><p class="q">${q}</p><p class="d">${d}</p><p class="n">${c} in the Rolodex</p></div>`).join('');
+
+  const pips = (v) => '<span class="pips">' + [1, 2, 3, 4, 5].map((i) => `<i class="${i <= v ? 'on' : ''}"></i>`).join('') + '</span>';
+  const statRows = (a) => ['No-code', 'AI-assisted', 'AI engineering', 'Custom code'].map((l, i) => `<div class="stat"><span>${l}</span>${pips(a[i])}</div>`).join('');
+  const cards = [
+    ['Systems', 'Outbound', 'Senior IC', 'GTM Systems Lead', '560-person financial data company · Portugal', [4, 3, 1, 2], 'Five years up through sales and revenue operations. Designed the Salesforce lead routing, automatic ARR tracking and a custom object for low-adoption customers. Also runs Clay to Salesforce to Outreach sourcing and scoring as a contract senior GTM engineer.'],
+    ['Outbound', 'Systems', 'Team lead', 'Founding GTM Engineering Lead', 'LATAM e-commerce platform · Brazil', [4, 4, 3, 3], 'Founded and leads the first GTM engineering team across LATAM. Owns the AI agent stack for enrichment, lead qualification and pipeline intelligence in HubSpot, Clay, Make, n8n and Python.'],
+    ['Systems', 'Outbound', 'Senior IC', 'GTM Engineering and Marketing Ops', '86-person payments fintech · Hungary', [4, 3, 2, 3], 'Was the sole GTM engineering function at his last company: HubSpot routing with lifecycle safeguards, Clay enrichment with LLM steps, buying-signal alerts in Slack, and weekly reporting in Python on GitHub Actions.']
+  ];
+  document.getElementById('cards').innerHTML = cards.map(([m, s, lv, t2, w, st, why]) =>
+    `<article class="card"><div class="tags"><span class="main">${m}</span><span>+ ${s}</span><span>${lv}</span></div><div><div class="t">${t2}</div><div class="w">${w}</div></div><div class="stats">${statRows(st)}</div><p><strong>Why sourced.</strong> ${why}</p></article>`).join('');
+})();
+</script>
+</body>
+</html>

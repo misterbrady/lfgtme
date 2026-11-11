@@ -1,0 +1,319 @@
+{
+ "postings": 179,
+ "tools": [
+  [
+   "APIs/webhooks",
+   134
+  ],
+  [
+   "Clay",
+   107
+  ],
+  [
+   "SQL",
+   103
+  ],
+  [
+   "Salesforce",
+   96
+  ],
+  [
+   "Python",
+   84
+  ],
+  [
+   "LLMs (named)",
+   83
+  ],
+  [
+   "HubSpot",
+   73
+  ],
+  [
+   "JavaScript/TypeScript",
+   72
+  ],
+  [
+   "n8n",
+   52
+  ],
+  [
+   "Zapier",
+   43
+  ],
+  [
+   "Outreach",
+   43
+  ],
+  [
+   "Cursor/Claude Code",
+   39
+  ],
+  [
+   "Apollo",
+   37
+  ],
+  [
+   "Snowflake",
+   33
+  ],
+  [
+   "Gong",
+   29
+  ],
+  [
+   "dbt",
+   19
+  ],
+  [
+   "ZoomInfo",
+   18
+  ],
+  [
+   "BigQuery",
+   17
+  ],
+  [
+   "Smartlead/Instantly",
+   17
+  ],
+  [
+   "Salesloft",
+   11
+  ],
+  [
+   "Marketo",
+   9
+  ],
+  [
+   "Segment",
+   9
+  ],
+  [
+   "Hightouch/Census",
+   5
+  ],
+  [
+   "Unify",
+   5
+  ],
+  [
+   "Common Room",
+   4
+  ],
+  [
+   "Make",
+   4
+  ],
+  [
+   "Retool",
+   1
+  ],
+  [
+   "Webflow",
+   1
+  ]
+ ],
+ "themes": [
+  [
+   "pipeline / revenue metric",
+   164
+  ],
+  [
+   "ship fast",
+   147
+  ],
+  [
+   "own end to end",
+   144
+  ],
+  [
+   "works with marketing",
+   142
+  ],
+  [
+   "AI agents",
+   140
+  ],
+  [
+   "enrichment",
+   130
+  ],
+  [
+   "lead scoring / routing",
+   119
+  ],
+  [
+   "revops",
+   116
+  ],
+  [
+   "signals / intent",
+   108
+  ],
+  [
+   "outbound",
+   104
+  ],
+  [
+   "documentation",
+   94
+  ],
+  [
+   "scrappy / builder",
+   92
+  ],
+  [
+   "experimentation",
+   91
+  ],
+  [
+   "LLMs",
+   79
+  ],
+  [
+   "CRM hygiene / data quality",
+   78
+  ],
+  [
+   "works with sales",
+   73
+  ],
+  [
+   "first / founding hire",
+   51
+  ],
+  [
+   "build from scratch",
+   38
+  ],
+  [
+   "low ego",
+   15
+  ]
+ ],
+ "min_years_asked": [
+  [
+   0,
+   1
+  ],
+  [
+   1,
+   7
+  ],
+  [
+   2,
+   28
+  ],
+  [
+   3,
+   37
+  ],
+  [
+   4,
+   14
+  ],
+  [
+   5,
+   26
+  ],
+  [
+   6,
+   4
+  ],
+  [
+   7,
+   2
+  ],
+  [
+   8,
+   1
+  ],
+  [
+   10,
+   2
+  ],
+  [
+   "none stated",
+   57
+  ]
+ ],
+ "example_lines": {
+  "AI agents": [
+   "6sense",
+   "this role will create the ai architecture, agents, and workflows that power our agentic gtm motion"
+  ],
+  "LLMs": [
+   "6sense",
+   "- build agentic workflows for end-to-end campaign creation, from brief intake to first-draft assets, using claude and comparable enterprise llm platforms"
+  ],
+  "outbound": [
+   "6sense",
+   "- ai-assisted workflows and agents that run reliably in production with real adoption across marketing, not just gtm and outbound"
+  ],
+  "lead scoring / routing": [
+   "6sense",
+   "that spans core gtm engineering (lead capture, routing, and bdr handoff), bdr prospecting automation, agentic support for content and campaign creation, and abm personalization across marketing"
+  ],
+  "signals / intent": [
+   "6sense",
+   "- build bdr prospecting automation, including signal-based account prioritization, research assembly, outreach drafting, and task automation, to increase high-quality pipeline per bdr"
+  ],
+  "CRM hygiene / data quality": [
+   "6sense",
+   "you'll independently weigh tradeoffs across speed, scale, data quality, privacy, ai governance, adoption, and pipeline impact, and serve as the go-to technical voice on what's scalable and sound, turning strategy into wo"
+  ],
+  "experimentation": [
+   "6sense",
+   "governance, experimentation & iteration"
+  ],
+  "own end to end": [
+   "6sense",
+   "we live by our being 6sense values of win as one team, stay curious, do the right thing, own the outcome, and create belonging"
+  ],
+  "ship fast": [
+   "6sense",
+   "you'll independently weigh tradeoffs across speed, scale, data quality, privacy, ai governance, adoption, and pipeline impact, and serve as the go-to technical voice on what's scalable and sound, turning strategy into wo"
+  ],
+  "works with sales": [
+   "6sense",
+   "director, marketing operations | direct reports: 1 (bdr operations specialist)"
+  ],
+  "works with marketing": [
+   "6sense",
+   "marketing operations | reports to: sr"
+  ],
+  "revops": [
+   "6sense",
+   "you'll own gtm engineering priorities and delivery across marketing and bdr teams, partnering with marketing operations, revenue/growth marketing, customer and event marketing, bdr leadership, revops, and it"
+  ],
+  "pipeline / revenue metric": [
+   "6sense",
+   "what you build will run our pipeline motion and get regular visibility from leaders across the company"
+  ],
+  "scrappy / builder": [
+   "Adyen",
+   "this role goes beyond traditional saas administration — you’ll act as a hands-on technical builder, leveraging ai coding assistants and llms to solve process bottlenecks and improve how our commercial teams work"
+  ],
+  "enrichment": [
+   "AgentMail",
+   "- own the growth data layer end to end: instrument the funnel, enrich every signup, and build the dashboards the company treats as the source of truth"
+  ],
+  "low ego": [
+   "AgentMail",
+   "- low ego, high buy-in"
+  ],
+  "documentation": [
+   "Apollo.io",
+   "- implement and administer salesforce-integrated tools as needed (for example chili piper, ironclad, gong), promote salesforce best practices and end-user adoption, and keep functional and technical systems documentation"
+  ],
+  "first / founding hire": [
+   "AssemblyAI",
+   "- you've been the first engineer in a sales or growth org and built the function from scratch"
+  ],
+  "build from scratch": [
+   "AssemblyAI",
+   "- you've been the first engineer in a sales or growth org and built the function from scratch"
+  ]
+ }
+}

@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hotspot Tagger</title>
+<style>
+:root{--paper:#fffaf0;--tint:#f3ead8;--ink:#1d1b16;--soft:#57524a;--orange:#c2410c;--teal:#0b7285;--plum:#7c3aed}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif}
+header{padding:16px 20px;border-bottom:1px solid #e5dccb;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+h1{margin:0;font-size:18px}
+.wrap{display:flex;flex-wrap:wrap;gap:20px;padding:20px}
+.stage{flex:999 1 640px;min-width:0}
+.side{flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:16px}
+.panel{background:#fff;border:1px solid #e5dccb;border-radius:12px;padding:16px}
+.panel h2{margin:0 0 10px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--soft)}
+button,select,input,textarea{font:inherit}
+button{background:var(--ink);color:var(--paper);border:0;border-radius:8px;padding:9px 14px;cursor:pointer;min-height:40px}
+button.ghost{background:none;color:var(--ink);border:1px solid var(--ink)}
+button.on{background:var(--orange)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.drop{border:2px dashed #cfc3ab;border-radius:12px;padding:48px 20px;text-align:center;color:var(--soft)}
+.canvas{position:relative;display:inline-block;max-width:100%;user-select:none;cursor:crosshair;line-height:0}
+.canvas img{max-width:100%;display:block;border-radius:8px}
+.box{position:absolute;border:2px solid;border-radius:4px;line-height:1.2}
+.box span{position:absolute;left:-2px;top:-20px;font-size:11px;padding:1px 5px;border-radius:3px;color:#fff;white-space:nowrap}
+.box.target{border-color:var(--orange);background:rgba(234,88,12,.15)}.box.target span{background:var(--orange)}
+.box.decoy{border-color:var(--teal);background:rgba(11,114,133,.12)}.box.decoy span{background:var(--teal)}
+.box.bonus{border-color:var(--plum);background:rgba(124,58,237,.12)}.box.bonus span{background:var(--plum)}
+.box.sel{outline:3px solid var(--ink);outline-offset:1px}
+.playing .box{opacity:0}
+.playing .box.found{opacity:1}
+.list{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto}
+.item{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:6px;cursor:pointer;border:1px solid transparent}
+.item:hover,.item.sel{border-color:#cfc3ab;background:var(--tint)}
+.dot{width:10px;height:10px;border-radius:99px;flex:0 0 10px}
+label{display:block;font-size:13px;color:var(--soft);margin:8px 0 4px}
+input[type=text],textarea,select{width:100%;padding:8px 10px;border:1px solid #cfc3ab;border-radius:8px;background:#fff}
+textarea{min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.msg{min-height:24px;font-weight:600}
+.hint{font-size:13px;color:var(--soft);margin:6px 0 0}
+</style>
+</head>
+<body>
+<header>
+<h1>Hotspot Tagger: Spot the GTM Engineer</h1>
+<div class="row">
+<button id="modeTag" class="on" type="button">Tag</button>
+<button id="modePlay" class="ghost" type="button">Play test</button>
+</div>
+</header>
+
+<div class="wrap">
+<div class="stage">
+<div id="drop" class="drop">
+<p><strong>Drop the crowd image here</strong>, or choose it.</p>
+<input id="file" type="file" accept="image/*">
+</div>
+<div id="canvas" class="canvas" hidden><img id="img" alt="Crowd illustration"><div id="boxes"></div></div>
+<p class="msg" id="msg" aria-live="polite"></p>
+</div>
+
+<div class="side">
+<div class="panel">
+<h2>1. Draw a box</h2>
+<label for="kind">What you're tagging next</label>
+<select id="kind">
+<option value="target">The GTM engineer (the one to find)</option>
+<option value="decoy" selected>A near miss (shows a joke)</option>
+<option value="bonus">A bonus character</option>
+</select>
+<p class="hint">Drag a box around the person in the image. Tight boxes are fairer: a click just outside one counts as a miss.</p>
+</div>
+
+<div class="panel">
+<h2>2. Tagged people</h2>
+<div class="list" id="list"></div>
+<div id="editor" hidden>
+<label for="eid">Name (short id)</label><input id="eid" type="text">
+<div id="jokeWrap"><label for="ejoke">Joke when clicked</label><input id="ejoke" type="text" placeholder="Not this one. ..."></div>
+<div class="row" style="margin-top:10px"><button id="del" class="ghost" type="button">Delete this box</button></div>
+</div>
+</div>
+
+<div class="panel">
+<h2>3. Export</h2>
+<div class="row"><button id="copy" type="button">Copy JSON</button><button id="save" class="ghost" type="button">Download JSON</button></div>
+<label for="json">Or paste JSON here to keep editing</label>
+<textarea id="json" spellcheck="false"></textarea>
+<div class="row" style="margin-top:8px"><button id="load" class="ghost" type="button">Load pasted JSON</button></div>
+</div>
+</div>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const img = $('img'), canvas = $('canvas'), boxesEl = $('boxes'), msg = $('msg');
+  const misses = ['Not this one. Great at Zapier, never touched a CRM.', 'Not this one. Watched a Clay tutorial once.', 'Not this one. That is a very confident SDR.', 'Not this one. Lovely person, wrong job.', 'Close. That is a RevOps analyst.'];
+  let items = [], sel = null, imageName = 'crowd.webp', mode = 'tag', drag = null, missIdx = 0;
+  const counts = { target: 0, decoy: 0, bonus: 0 };
+
+  function loadFile(f) {
+    if (!f || !f.type.startsWith('image/')) return;
+    imageName = f.name;
+    img.src = URL.createObjectURL(f);
+    img.onload = () => { $('drop').hidden = true; canvas.hidden = false; render(); };
+  }
+  $('file').addEventListener('change', (e) => loadFile(e.target.files[0]));
+  ['dragover', 'drop'].forEach((t) => document.addEventListener(t, (e) => { e.preventDefault(); if (t === 'drop') loadFile(e.dataTransfer.files[0]); }));
+
+  function pt(e) {
+    const r = img.getBoundingClientRect();
+    return { x: Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), y: Math.min(1, Math.max(0, (e.clientY - r.top) / r.height)) };
+  }
+  function hit(p) {
+    for (let i = items.length - 1; i >= 0; i--) {
+      const b = items[i];
+      if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) return b;
+    }
+    return null;
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    const p = pt(e);
+    if (mode === 'play') { play(p); return; }
+    const h = hit(p);
+    if (h && !e.shiftKey) { select(h); return; }
+    drag = { x0: p.x, y0: p.y, ghost: document.createElement('div') };
+    drag.ghost.className = 'box ' + $('kind').value;
+    boxesEl.appendChild(drag.ghost);
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const p = pt(e), b = rect(drag.x0, drag.y0, p.x, p.y);
+    Object.assign(drag.ghost.style, pos(b));
+  });
+  canvas.addEventListener('pointerup', (e) => {
+    if (!drag) return;
+    const p = pt(e), b = rect(drag.x0, drag.y0, p.x, p.y);
+    drag.ghost.remove(); drag = null;
+    if (b.w < 0.004 || b.h < 0.004) return;
+    const kind = $('kind').value;
+    if (kind === 'target') items = items.filter((i) => i.kind !== 'target');
+    counts[kind]++;
+    const it = { kind, id: kind === 'target' ? 'gtme' : kind + '-' + counts[kind], ...b, joke: kind === 'decoy' ? '' : undefined };
+    items.push(it);
+    if (kind === 'target') $('kind').value = 'decoy';
+    select(it);
+  });
+
+  const rect = (a, b, c, d) => ({ x: Math.min(a, c), y: Math.min(b, d), w: Math.abs(c - a), h: Math.abs(d - b) });
+  const pos = (b) => ({ left: b.x * 100 + '%', top: b.y * 100 + '%', width: b.w * 100 + '%', height: b.h * 100 + '%' });
+  const label = (b) => b.kind === 'target' ? 'TARGET' : b.id;
+  const color = { target: '#c2410c', decoy: '#0b7285', bonus: '#7c3aed' };
+
+  function render() {
+    boxesEl.innerHTML = '';
+    items.forEach((b) => {
+      const d = document.createElement('div');
+      d.className = 'box ' + b.kind + (b === sel ? ' sel' : '') + (b.found ? ' found' : '');
+      Object.assign(d.style, pos(b));
+      const s = document.createElement('span'); s.textContent = label(b); d.appendChild(s);
+      boxesEl.appendChild(d);
+    });
+    const list = $('list'); list.innerHTML = '';
+    if (!items.length) list.innerHTML = '<p class="hint">Nothing tagged yet. Start with the GTM engineer.</p>';
+    items.forEach((b) => {
+      const r = document.createElement('div');
+      r.className = 'item' + (b === sel ? ' sel' : '');
+      r.innerHTML = '<span class="dot"></span><span></span>';
+      r.firstChild.style.background = color[b.kind];
+      r.lastChild.textContent = label(b) + (b.kind === 'decoy' ? (b.joke ? ': ' + b.joke : ': (no joke yet)') : '');
+      r.onclick = () => select(b);
+      list.appendChild(r);
+    });
+    $('editor').hidden = !sel;
+    if (sel) { $('eid').value = sel.id; $('jokeWrap').hidden = sel.kind !== 'decoy'; $('ejoke').value = sel.joke || ''; }
+    $('json').value = JSON.stringify(out(), null, 2);
+    const hasT = items.some((i) => i.kind === 'target');
+    if (mode === 'tag') msg.textContent = hasT ? items.filter((i) => i.kind === 'decoy').length + ' near misses tagged. Aim for 8 to 12.' : 'Tag the GTM engineer first.';
+  }
+  function select(b) { sel = b; render(); if (b && b.kind === 'decoy' && !b.joke) $('ejoke').focus(); }
+  $('eid').oninput = (e) => { if (sel) { sel.id = e.target.value.trim(); render(); $('eid').focus(); } };
+  $('ejoke').oninput = (e) => { if (sel) { sel.joke = e.target.value; $('json').value = JSON.stringify(out(), null, 2); } };
+  $('ejoke').onchange = render;
+  $('del').onclick = () => { items = items.filter((i) => i !== sel); sel = null; render(); };
+
+  const r3 = (n) => Math.round(n * 1000) / 1000;
+  const box = (b) => ({ id: b.id, x: r3(b.x), y: r3(b.y), w: r3(b.w), h: r3(b.h) });
+  function out() {
+    const t = items.find((i) => i.kind === 'target');
+    return {
+      image: imageName,
+      target: t ? box(t) : null,
+      decoys: items.filter((i) => i.kind === 'decoy').map((b) => ({ ...box(b), joke: b.joke || '' })),
+      bonus: items.filter((i) => i.kind === 'bonus').map(box)
+    };
+  }
+  $('copy').onclick = async () => { try { await navigator.clipboard.writeText(JSON.stringify(out(), null, 2)); msg.textContent = 'Copied. Paste it to Claude.'; } catch (e) { $('json').select(); msg.textContent = 'Select-all done: press Cmd+C.'; } };
+  $('save').onclick = () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(out(), null, 2)], { type: 'application/json' }));
+    a.download = imageName.replace(/\.[^.]+$/, '') + '-hotspots.json'; a.click();
+  };
+  $('load').onclick = () => {
+    try {
+      const j = JSON.parse($('json').value);
+      items = [];
+      if (j.target) items.push({ kind: 'target', ...j.target });
+      (j.decoys || []).forEach((d) => items.push({ kind: 'decoy', ...d }));
+      (j.bonus || []).forEach((d) => items.push({ kind: 'bonus', ...d }));
+      sel = null; render(); msg.textContent = 'Loaded ' + items.length + ' boxes.';
+    } catch (e) { msg.textContent = 'That JSON did not parse.'; }
+  };
+
+  function setMode(m) {
+    mode = m;
+    $('modeTag').className = m === 'tag' ? 'on' : 'ghost';
+    $('modePlay').className = m === 'play' ? 'on' : 'ghost';
+    canvas.classList.toggle('playing', m === 'play');
+    items.forEach((i) => { i.found = false; });
+    sel = null; render();
+    if (m === 'play') msg.textContent = 'Play test: find the GTM engineer. Boxes are hidden.';
+  }
+  $('modeTag').onclick = () => setMode('tag');
+  $('modePlay').onclick = () => setMode('play');
+
+  function play(p) {
+    const h = hit(p);
+    if (h && h.kind === 'target') { h.found = true; msg.textContent = 'Found one. Orange cap, laptop open, CRM already fixed.'; }
+    else if (h && h.kind === 'bonus') { h.found = true; msg.textContent = 'Bonus find: ' + h.id + '.'; }
+    else if (h && h.kind === 'decoy') { msg.textContent = h.joke || misses[missIdx++ % misses.length]; }
+    else { msg.textContent = misses[missIdx++ % misses.length]; }
+    render();
+  }
+  render();
+})();
+</script>
+</body>
+</html>
