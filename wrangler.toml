@@ -1,0 +1,16 @@
+# lfgtme.com: the site in ./site served as static files from Cloudflare.
+# Deploy with: npx wrangler deploy
+name = "lfgtme"
+compatibility_date = "2026-10-01"
+account_id = "5de841b9fc6c4895c76fe41e5e259297"
+
+workers_dev = false
+
+routes = [
+  { pattern = "lfgtme.com", custom_domain = true },
+  { pattern = "www.lfgtme.com", custom_domain = true },
+]
+
+[assets]
+directory = "./site"
+not_found_handling = "404-page"

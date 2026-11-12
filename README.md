@@ -7,7 +7,7 @@ Click the wrong person and you get a joke built from what 179 real GTM engineer 
 for. Find the right one and the page says what the rest of the site is about: we find them for
 you.
 
-Play it at https://misterbrady.github.io/lfgtme/ or open `site/index.html` in a browser. It works on phones too (the hall scrolls
+Play it at https://lfgtme.com (mirror: https://misterbrady.github.io/lfgtme/) or open `site/index.html` in a browser. It works on phones too (the hall scrolls
 sideways).
 
 ## What's here
@@ -47,3 +47,8 @@ The typical post names 6 tools. Counts come from keyword matching, so treat them
 To rebuild them: put a CSV of postings (company, job title, posting URL and the other columns
 `fetch.py` reads) at `jd-library/lane-scout-sheet.csv`, then run `python3 fetch.py` and
 `python3 analyze.py`. Python 3, standard library only.
+
+## Hosting
+
+lfgtme.com is a Cloudflare Worker serving `site/` as static files (`wrangler.toml`). Deploy with
+`npx wrangler deploy` from the repo root. GitHub Pages serves the same files as a mirror.
