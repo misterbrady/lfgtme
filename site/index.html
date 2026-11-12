@@ -107,7 +107,7 @@ nav a { color: var(--ink); text-decoration: none }
     <a href="#characters">The four characters</a>
     <a href="#shortlist">Sample shortlist</a>
     <a href="#fee">Fee</a>
-    <a class="pill" href="#book">Book an intake call</a>
+    <a class="pill" href="https://cal.com/mister-brady/quick-chat" target="_blank" rel="noopener">Book an intake call</a>
   </nav>
 </div></header>
 
@@ -155,7 +155,7 @@ nav a { color: var(--ink); text-decoration: none }
     <img src="steven.jpg" alt="Steven Brady">
     <div><div class="who-t">Steven Brady does the spotting.</div><div class="who-d">15+ years in GTM across B2B SaaS and FinTech. Seller by backstory, multiclass Outbound and Systems. Builds agentic operating systems for recruiters.</div></div>
   </div>
-  <a class="cta" href="#book">Book an intake call</a>
+  <a class="cta" href="https://cal.com/mister-brady/quick-chat" target="_blank" rel="noopener">Book an intake call</a>
 </div></section>
 </main>
 
@@ -232,9 +232,9 @@ nav a { color: var(--ink); text-decoration: none }
   const pips = (v) => '<span class="pips">' + [1, 2, 3, 4, 5].map((i) => `<i class="${i <= v ? 'on' : ''}"></i>`).join('') + '</span>';
   const statRows = (a) => ['No-code', 'AI-assisted', 'AI engineering', 'Custom code'].map((l, i) => `<div class="stat"><span>${l}</span>${pips(a[i])}</div>`).join('');
   const cards = [
-    ['Systems', 'Outbound', 'Senior IC', 'GTM Systems Lead', '560-person financial data company · Portugal', [4, 3, 1, 2], 'Five years up through sales and revenue operations. Designed the Salesforce lead routing, automatic ARR tracking and a custom object for low-adoption customers. Also runs Clay to Salesforce to Outreach sourcing and scoring as a contract senior GTM engineer.'],
+    ['Systems', 'Outbound', 'Senior IC', 'GTM Systems Lead', 'Financial data company · Portugal', [4, 3, 1, 2], 'Five years up through sales and revenue operations. Designed the Salesforce lead routing, automatic ARR tracking and a custom object for low-adoption customers. Also runs Clay to Salesforce to Outreach sourcing and scoring as a contract senior GTM engineer.'],
     ['Outbound', 'Systems', 'Team lead', 'Founding GTM Engineering Lead', 'LATAM e-commerce platform · Brazil', [4, 4, 3, 3], 'Founded and leads the first GTM engineering team across LATAM. Owns the AI agent stack for enrichment, lead qualification and pipeline intelligence in HubSpot, Clay, Make, n8n and Python.'],
-    ['Systems', 'Outbound', 'Senior IC', 'GTM Engineering and Marketing Ops', '86-person payments fintech · Hungary', [4, 3, 2, 3], 'Was the sole GTM engineering function at his last company: HubSpot routing with lifecycle safeguards, Clay enrichment with LLM steps, buying-signal alerts in Slack, and weekly reporting in Python on GitHub Actions.']
+    ['Systems', 'Outbound', 'Senior IC', 'GTM Engineering and Marketing Ops', 'Payments fintech · Hungary', [4, 3, 2, 3], 'Was the sole GTM engineering function at his last company: HubSpot routing with lifecycle safeguards, Clay enrichment with LLM steps, buying-signal alerts in Slack, and weekly reporting in Python on GitHub Actions.']
   ];
   document.getElementById('cards').innerHTML = cards.map(([m, s, lv, t2, w, st, why]) =>
     `<article class="card"><div class="tags"><span class="main">${m}</span><span>+ ${s}</span><span>${lv}</span></div><div><div class="t">${t2}</div><div class="w">${w}</div></div><div class="stats">${statRows(st)}</div><p><strong>Why sourced.</strong> ${why}</p></article>`).join('');
